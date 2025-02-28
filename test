@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中医体质辨别问卷（手机端版）</title>
+  <!-- 引入 Chart.js 和 DataLabels 插件 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+      padding: 0;
+      line-height: 1.6;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+    p {
+      margin: 10px 0;
+      font-size: 1em;
+    }
+    .question {
+      background: #fff;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 0.95em;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+    button {
+      display: block;
+      width: 90%;
+      max-width: 300px;
+      margin: 20px auto;
+      padding: 10px;
+      font-size: 1em;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+    }
+    #result {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      background: #fff;
+    }
+    #chart {
+      max-width: 100%;
+      margin: 20px auto;
+    }
+    @media (min-width: 600px) {
+      body {
+        margin: 20px;
+      }
+      .question {
+        font-size: 1em;
+      }
+      .options label {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>中医体质辨别问卷</h1>
+  
+  <!-- 第一阶段：初步筛查 -->
+  <div id="screening-phase">
+    <h2>第一阶段：初步筛查</h2>
+    <p>请回答下列问题，帮助我们初步判断您可能具有哪些体质倾向。每题选项范围为 1（完全不符合）到 5（非常符合）。</p>
+    <form id="screening-form">
+      <!-- 注意：题目中不再标明体质名称，采用了更详细描述 -->
+      <div class="question" data-category="气虚">
+        <p>1. 您是否经常感到体力不足、容易疲劳，且轻微活动后需要较长时间恢复？</p>
+        <label><input type="radio" name="screening-0" value="1" required> 1</label>
+        <label><input type="radio" name="screening-0" value="2"> 2</label>
+        <label><input type="radio" name="screening-0" value="3"> 3</label>
+        <label><input type="radio" name="screening-0" value="4"> 4</label>
+        <label><input type="radio" name="screening-0" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="阳虚">
+        <p>2. 您是否经常感觉四肢冰凉，即使在温暖环境中也难以驱散寒意？</p>
+        <label><input type="radio" name="screening-1" value="1" required> 1</label>
+        <label><input type="radio" name="screening-1" value="2"> 2</label>
+        <label><input type="radio" name="screening-1" value="3"> 3</label>
+        <label><input type="radio" name="screening-1" value="4"> 4</label>
+        <label><input type="radio" name="screening-1" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="阴虚">
+        <p>3. 您是否常感口干舌燥，即使频繁饮水仍觉得喉咙不适，并可能夜间出汗？</p>
+        <label><input type="radio" name="screening-2" value="1" required> 1</label>
+        <label><input type="radio" name="screening-2" value="2"> 2</label>
+        <label><input type="radio" name="screening-2" value="3"> 3</label>
+        <label><input type="radio" name="screening-2" value="4"> 4</label>
+        <label><input type="radio" name="screening-2" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="血虚">
+        <p>4. 您是否常感面色苍白、头晕乏力，觉得精力不足以支持日常活动？</p>
+        <label><input type="radio" name="screening-3" value="1" required> 1</label>
+        <label><input type="radio" name="screening-3" value="2"> 2</label>
+        <label><input type="radio" name="screening-3" value="3"> 3</label>
+        <label><input type="radio" name="screening-3" value="4"> 4</label>
+        <label><input type="radio" name="screening-3" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="痰湿">
+        <p>5. 您是否常觉得身体沉重、四肢不灵活，并且体重容易增加？</p>
+        <label><input type="radio" name="screening-4" value="1" required> 1</label>
+        <label><input type="radio" name="screening-4" value="2"> 2</label>
+        <label><input type="radio" name="screening-4" value="3"> 3</label>
+        <label><input type="radio" name="screening-4" value="4"> 4</label>
+        <label><input type="radio" name="screening-4" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="湿热">
+        <p>6. 您是否经常感觉口苦、皮肤油腻，伴随痘痘或其他皮肤问题？</p>
+        <label><input type="radio" name="screening-5" value="1" required> 1</label>
+        <label><input type="radio" name="screening-5" value="2"> 2</label>
+        <label><input type="radio" name="screening-5" value="3"> 3</label>
+        <label><input type="radio" name="screening-5" value="4"> 4</label>
+        <label><input type="radio" name="screening-5" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="气郁">
+        <p>7. 您是否经常感到心情低落、胸闷，且在压力大时情绪波动明显？</p>
+        <label><input type="radio" name="screening-6" value="1" required> 1</label>
+        <label><input type="radio" name="screening-6" value="2"> 2</label>
+        <label><input type="radio" name="screening-6" value="3"> 3</label>
+        <label><input type="radio" name="screening-6" value="4"> 4</label>
+        <label><input type="radio" name="screening-6" value="5"> 5</label>
+      </div>
+      <div class="question" data-category="特禀">
+        <p>8. 您是否曾多次出现过敏反应，如皮肤红疹、瘙痒或哮喘等？</p>
+        <label><input type="radio" name="screening-7" value="1" required> 1</label>
+        <label><input type="radio" name="screening-7" value="2"> 2</label>
+        <label><input type="radio" name="screening-7" value="3"> 3</label>
+        <label><input type="radio" name="screening-7" value="4"> 4</label>
+        <label><input type="radio" name="screening-7" value="5"> 5</label>
+      </div>
+      <button type="submit">提交筛查</button>
+    </form>
+  </div>
+  
+  <!-- 第二阶段：详细问卷，仅针对筛查后可能的体质显示 -->
+  <div id="detailed-phase" style="display:none;">
+    <h2>第二阶段：详细问卷</h2>
+    <p>根据您的初步筛查结果，请继续作答下面的问题（每题选项范围为 1～5）：</p>
+    <form id="detailed-form">
+      <!-- 详细题目将在这里动态生成 -->
+    </form>
+    <button id="submit-detailed">提交详细问卷</button>
+  </div>
+  
+  <!-- 结果展示区域 -->
+  <div id="result" style="display:none;">
+    <h2>问卷结果</h2>
+    <div id="result-content"></div>
+    <canvas id="chart"></canvas>
+    <p style="text-align:center; font-size:0.9em; margin-top:10px;">
+      本问卷内容参考：《黄帝内经》《伤寒论》等中医经典文献。
+    </p>
+  </div>
+  
+  <script>
+    // 第一阶段题目（筛查）
+    const screeningQuestions = [
+      { category: "气虚", text: "您是否经常感到体力不足、容易疲劳，且轻微活动后需要较长时间恢复？" },
+      { category: "阳虚", text: "您是否经常感觉四肢冰凉，即使在温暖环境中也难以驱散寒意？" },
+      { category: "阴虚", text: "您是否常感口干舌燥，即使频繁饮水仍觉得喉咙不适，并可能夜间出汗？" },
+      { category: "血虚", text: "您是否常感面色苍白、头晕乏力，觉得精力不足以支持日常活动？" },
+      { category: "痰湿", text: "您是否常觉得身体沉重、四肢不灵活，并且体重容易增加？" },
+      { category: "湿热", text: "您是否经常感觉口苦、皮肤油腻，伴随痘痘或其他皮肤问题？" },
+      { category: "气郁", text: "您是否经常感到心情低落、胸闷，且在压力大时情绪波动明显？" },
+      { category: "特禀", text: "您是否曾多次出现过敏反应，如皮肤红疹、瘙痒或哮喘等？" }
+    ];
+    
+    // 第二阶段详细问题题库，每个体质 3 个问题（题目中不提示体质名称）
+    const detailedQuestionsBank = {
+      "气虚": [
+        { text: "您在进行轻微体力活动后，是否常感到呼吸短促且全身无力，需要较长时间恢复？" },
+        { text: "日常活动中，您是否明显觉得自己精力不足，容易疲劳？" },
+        { text: "您是否常常感觉缺乏持续的活力支持生活？" }
+      ],
+      "阳虚": [
+        { text: "您是否经常感觉全身发凉，即使室内温度适中也难以感受到温暖？" },
+        { text: "在冷环境中，您是否明显比他人更怕冷，手脚常感冰凉？" },
+        { text: "您是否常觉得体内寒意难散，缺乏温暖感？" }
+      ],
+      "阴虚": [
+        { text: "您是否经常感到口腔极度干燥，即使频繁饮水也难缓解？" },
+        { text: "您是否偶尔在夜间出现大量出汗，影响睡眠？" },
+        { text: "您是否常觉得体内发热、烦躁不安，即使外界温度适中？" }
+      ],
+      "血虚": [
+        { text: "您是否注意到自己的面色常显苍白，缺乏血色？" },
+        { text: "日常中，您是否经常感到头晕目眩，影响活动？" },
+        { text: "您是否觉得体力不足，稍作活动便感疲惫？" }
+      ],
+      "痰湿": [
+        { text: "您是否发现自己体重增长较快，难以通过运动或饮食控制？" },
+        { text: "活动中，您是否常觉得身体沉重，四肢不灵活？" },
+        { text: "您是否在行走或运动时明显感觉到体力不足和动作迟缓？" }
+      ],
+      "湿热": [
+        { text: "您是否经常出现皮肤油腻、痘痘频发或其他皮肤问题？" },
+        { text: "在没有明显外界刺激时，您是否常觉得体内发热、烦躁？" },
+        { text: "您是否常感口中苦涩，伴有食欲不振？" }
+      ],
+      "气郁": [
+        { text: "您是否经常觉得情绪低落、心情沉闷，难以振作？" },
+        { text: "您是否常感胸闷或压力过大而难以释怀？" },
+        { text: "您是否觉得情绪波动较大，容易因外界环境影响而感到焦虑？" }
+      ],
+      "特禀": [
+        { text: "您在进食某些食物或接触特定环境时，是否容易出现过敏反应（如皮肤红疹、瘙痒）？" },
+        { text: "您是否曾反复出现皮肤瘙痒、红疹或其他过敏症状？" },
+        { text: "您是否觉得自己对外界刺激异常敏感？" }
+      ]
+    };
+    
+    // 保存第一阶段（筛查）得分
+    const screeningScores = {};
+    
+    // 监听筛查表单提交
+    document.getElementById("screening-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      screeningQuestions.forEach((q, index) => {
+        const radios = document.getElementsByName("screening-" + index);
+        for (const radio of radios) {
+          if (radio.checked) {
+            screeningScores[q.category] = parseInt(radio.value);
+            break;
+          }
+        }
+      });
+      // 判断筛查得分，得分 ≥ 3 视为可能倾向
+      const categoriesForDetailed = [];
+      for (const category in screeningScores) {
+        if (screeningScores[category] >= 3) {
+          categoriesForDetailed.push(category);
+        }
+      }
+      if (categoriesForDetailed.length === 0) {
+        alert("筛查结果显示没有明显的体质倾向。");
+        return;
+      }
+      document.getElementById("screening-phase").style.display = "none";
+      document.getElementById("detailed-phase").style.display = "block";
+      
+      // 动态生成详细问卷，仅针对可能体质，每个生成 3 道问题
+      const detailedForm = document.getElementById("detailed-form");
+      detailedForm.innerHTML = "";
+      let questionCounter = 0;
+      categoriesForDetailed.forEach(category => {
+        const questions = detailedQuestionsBank[category];
+        questions.forEach(q => {
+          questionCounter++;
+          const div = document.createElement("div");
+          div.className = "question";
+          div.innerHTML = `<p>${questionCounter}. ${q.text}</p>
+            <label><input type="radio" name="detailed-${questionCounter}" value="1" required> 1</label>
+            <label><input type="radio" name="detailed-${questionCounter}" value="2"> 2</label>
+            <label><input type="radio" name="detailed-${questionCounter}" value="3"> 3</label>
+            <label><input type="radio" name="detailed-${questionCounter}" value="4"> 4</label>
+            <label><input type="radio" name="detailed-${questionCounter}" value="5"> 5</label>`;
+          div.dataset.category = category;
+          detailedForm.appendChild(div);
+        });
+      });
+    });
+    
+    // 监听详细问卷提交
+    document.getElementById("submit-detailed").addEventListener("click", function(e) {
+      e.preventDefault();
+      const detailedScores = {};
+      const detailedQuestions = document.querySelectorAll("#detailed-form .question");
+      detailedQuestions.forEach(q => {
+        const category = q.dataset.category;
+        const radios = q.querySelectorAll("input[type='radio']");
+        for (const radio of radios) {
+          if (radio.checked) {
+            if (!detailedScores[category]) {
+              detailedScores[category] = 0;
+            }
+            detailedScores[category] += parseInt(radio.value);
+            break;
+          }
+        }
+      });
+      // 合并第一阶段与详细问卷得分
+      const finalScores = {};
+      for (const category in screeningScores) {
+        finalScores[category] = screeningScores[category];
+      }
+      for (const category in detailedScores) {
+        finalScores[category] = (finalScores[category] || 0) + detailedScores[category];
+      }
+      
+      // 计算最高得分体质
+      let maxCategory = null;
+      let maxScore = -Infinity;
+      for (const category in finalScores) {
+        if (finalScores[category] > maxScore) {
+          maxScore = finalScores[category];
+          maxCategory = category;
+        }
+      }
+      
+      const explanations = {
+        "气虚": "气虚体质的人常感体力不足、容易疲劳，免疫力可能较低。",
+        "阳虚": "阳虚体质者通常表现为畏寒怕冷、手足冰凉，身体新陈代谢较低。",
+        "阴虚": "阴虚体质者常有口干、盗汗、五心烦热等表现，可能存在内热偏盛。",
+        "血虚": "血虚体质者易出现面色萎黄、头晕心悸、失眠等症状，体质偏弱。",
+        "痰湿": "痰湿体质者通常感觉身体沉重、易胖、舌苔厚腻，体内痰湿较重。",
+        "湿热": "湿热体质者常表现为口苦、皮肤油腻、易长痘，体内湿热偏盛。",
+        "气郁": "气郁体质者易情绪低落、胸闷，常伴有情志不舒。",
+        "特禀": "特禀体质者容易出现过敏反应，对某些物质敏感。"
+      };
+      
+      const weightLossAdvice = {
+        "气虚": "减脂时建议避免过度运动，应结合适度运动和合理温补，注意休息。",
+        "阳虚": "减脂过程中应注意保暖，避免生冷刺激，采用温和运动。",
+        "阴虚": "减脂期间宜清淡饮食，避免辛辣刺激，多食滋阴润燥食品。",
+        "血虚": "应注重补血调理，减脂过程中避免过度节食，保持营养。",
+        "痰湿": "痰湿体质者减脂应以清淡饮食为主，忌油腻高糖，多做促进排湿运动。",
+        "湿热": "减脂时应少吃油炸、辛辣食物，多摄入清热利湿的蔬果。",
+        "气郁": "建议减脂过程中注意情绪调节，适当进行户外运动和放松训练。",
+        "特禀": "减脂时应注意避免过敏原，保持饮食均衡，适度运动。"
+      };
+      
+      document.getElementById("detailed-phase").style.display = "none";
+      document.getElementById("result").style.display = "block";
+      
+      const resultContent = document.getElementById("result-content");
+      resultContent.innerHTML = `<p>各体质最终得分： ${JSON.stringify(finalScores)}</p>
+        <p><strong>您的主要体质为：${maxCategory}</strong></p>
+        <p><strong>体质说明：</strong>${explanations[maxCategory]}</p>
+        <p><strong>减脂建议：</strong>${weightLossAdvice[maxCategory]}</p>`;
+      
+      // 准备柱状图数据，最高分项用特殊颜色
+      const labels = Object.keys(finalScores);
+      const dataValues = Object.values(finalScores);
+      const backgroundColors = labels.map(label => label === maxCategory ? 'rgba(255, 99, 132, 0.6)' : 'rgba(135, 206, 250, 0.6)');
+      const borderColors = labels.map(label => label === maxCategory ? 'rgba(255, 99, 132, 1)' : 'rgba(135, 206, 250, 1)');
+      
+      const ctx = document.getElementById('chart').getContext('2d');
+      if(window.myChart instanceof Chart){
+        window.myChart.destroy();
+      }
+      window.myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '最终体质得分',
+            data: dataValues,
+            backgroundColor: backgroundColors,
+            borderColor: borderColors,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          plugins: {
+            datalabels: {
+              color: 'black',
+              anchor: 'end',
+              align: 'end',
+              formatter: value => value
+            },
+            legend: { display: false },
+            title: {
+              display: true,
+              text: '各体质最终得分比较'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 5 }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    });
+  </script>
+</body>
+</html>
